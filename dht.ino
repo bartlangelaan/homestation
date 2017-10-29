@@ -23,9 +23,6 @@ float getTemperature() {
     Serial.println("Error reading temperature!");
   }
   else {
-    Serial.print("Temperature: ");
-    Serial.print(event.temperature);
-    Serial.println(" *C");
     return event.temperature;
   }
 }
@@ -38,9 +35,6 @@ float getHumidity() {
     Serial.println("Error reading humidity!");
   }
   else {
-    Serial.print("Humidity: ");
-    Serial.print(event.relative_humidity);
-    Serial.println("%");
     return event.relative_humidity;
   }
 }

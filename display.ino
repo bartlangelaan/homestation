@@ -21,12 +21,10 @@ int leftPadToCenter(String string, int fontSize = 1) {
   return (128 - (string.length() * fontSize * 6)) / 2;
 }
 
-void displayShow(float value, String unit, String type) {
+void displayShow(String value, String unit, String type) {
   display.clearDisplay();
 
-  // First line:
-  // - height: 11px
-  // - font size: 7px
+  // First line (1 - 11)
   String firstLine = "The " + type + " is";
   display.setTextSize(1);
   display.setTextColor(INVERSE);
@@ -34,10 +32,20 @@ void displayShow(float value, String unit, String type) {
   display.setCursor(leftPadToCenter(firstLine), 2);
   display.println(firstLine);
 
-  // Second line:
-  // - margin: 2px
-  // - font size: 14px
-  String secondLine = String(value) + unit;
+  // Progress line (13 - 15)
+  float m = millis();
+  float progress = m / 1000 / SCREEN_DISPLAY_TIME;
+  int p = progress;
+  int width = (progress - p) * 128;
+  if(p % 2 == 0) {
+    display.fillRect(0, 13, width, 2, WHITE);
+  } else {
+    display.fillRect(width, 13, 128 - width, 2, WHITE);
+  }
+  
+
+  // Second line (18 - 32)
+  String secondLine = value + unit;
   display.setTextSize(2);
   display.setCursor(leftPadToCenter(secondLine, 2), 18);
   display.println(secondLine);

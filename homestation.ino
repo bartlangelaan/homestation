@@ -7,6 +7,9 @@
 // OLED display
 int SCREEN_DISPLAY_TIME = 3;
 
+// The number of seconds between data posts
+int DATA_POST_TIME = 5;
+
 
 void setup() {
   // Make serial data available for all other files.
@@ -17,26 +20,53 @@ void setup() {
 
   // Setup the DHT sensor.
   setupDHT();
+
+  // Connect to Wifi neworks
+  setupWifi();
+
+  // Set up light sensor
+  setupLightSensor();
 }
 
+int lastDataSent = 0;
+
 void loop() {
+  
   // Get all sensor data
   float temperature = getTemperature();
   float humidity = getHumidity();
+  bool light = getLight();
+  float windspeed = getWindspeed();
 
   // Determine the sensor data to display
   int screen_number = millis() / 1000 / SCREEN_DISPLAY_TIME;
 
-  // Display the right sensor data
-  switch(screen_number % 2) {
+  //Display the right sensor data
+  switch(screen_number % 4) {
     case 0:
-      displayShow(temperature, " C", "temperature");
+      displayShow(String(temperature), " C", "temperature");
       break;
     case 1:
-      displayShow(humidity, "%", "humidity");
+      displayShow(String(humidity), "%", "humidity");
+      break;
+    case 2:
+      displayShow(light ? "On" : "Off", "", "light");
+      break;
+    case 3:
+      displayShow(String(windspeed), "km/h", "windspeed");
+      break;
   }
 
-  // The sensor data isn't refreshed that much, wait 200ms
-  // before getting new data
-  delay(200);
+  if(lastDataSent < (millis() - (DATA_POST_TIME * 1000))) {
+    if(sendData(temperature, humidity, light, windspeed)) {
+      lastDataSent = millis();
+    }
+  }
+
+  if(light >= 1 && temperature > 24) {
+    turnLightOn();
+  }
+  else {
+    turnLightOff();
+  }
 }
